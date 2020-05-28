@@ -1,0 +1,11 @@
+endOfRound5a.azul should end with the player with the highest score wins. Steve Rogers should outsmart Tony Stark and win 61 to 47
+
+endOfRound5b.azul should end with a draw of scores with both Ironman and Tony Stank getting 49 each however TonyStank wins due to have 1 extra verticle completed
+
+endOfRound5c.azul should end with a win for Tony Stark however the scores should be 55 to 52 as player should get 10 points for having all 5 mosaics of the one colour on the board
+
+endOfRound5d.azul should end with a draw which is undeterimined as both players finnish with the same number of points
+
+endOfRound5e.azul does not end the round but should refill the bag and commence round 6
+
+
