@@ -96,6 +96,10 @@ class GameEngine {
         // Start a new game
         void newGame();
 
+        GameAction createShowAction(std::string input);
+
+        void printPlayerBoard(int playerIndex);
+
     private:
         std::shared_ptr<GameModel>    gameModel;
         std::shared_ptr<IOHandler>    ioHandler;

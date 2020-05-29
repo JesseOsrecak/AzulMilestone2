@@ -23,6 +23,10 @@ Taking turns:
 Source:[Centre (c) or FactoryId (1-5)] Colourcode:[RYBLU] Dest:[PatternLineId (1-5) or FloorLine (f)]  
 e.g to take yellow tiles from factory 2 onto pattern line 5: `2 y 5`  
 
+Show a players board
+Show <players name>
+eg: show Fred
+
 
 
 <a name="algorithm"></a>
@@ -287,8 +291,6 @@ UI, and justify any other necessary changes to your group’s Azul program.
 ## Tasks
 
 3-4 player mode
-
-- option for looking at other players board
 
 - check save game works with multiple players
 

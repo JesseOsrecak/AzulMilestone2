@@ -16,10 +16,21 @@ GameAction::GameAction(ActionType type, shared_ptr<GameTurn> turn) :
     turn(turn)
 {}
 
+GameAction::GameAction(ActionType type, int playerIndex)
+{
+    type_ = type;
+    this->playerIndex = playerIndex;
+}
+
 ActionType GameAction::type() {
     return type_;
 }
 
 shared_ptr<GameTurn> GameAction::getTurn() {
     return turn;
+}
+
+int GameAction::getPlayerIndex()
+{
+    return playerIndex;
 }

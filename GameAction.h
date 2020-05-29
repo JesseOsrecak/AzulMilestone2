@@ -15,6 +15,7 @@
 
 enum ActionType {
     TURN,
+    SHOW_PLAYER,
     SHOW_COMMANDS,
     SHOW_MENU,
     NEW,
@@ -30,6 +31,7 @@ class GameAction {
         GameAction();
         GameAction(ActionType type);
         GameAction(ActionType type, std::shared_ptr<GameTurn> turn);
+        GameAction(ActionType, int playerIndex);
 
         // Returns the type of action
         ActionType type();
@@ -37,9 +39,13 @@ class GameAction {
         // Return the turn requested
         std::shared_ptr<GameTurn> getTurn();
 
+        //Returns players name
+        int getPlayerIndex();
+
     private:
         ActionType type_;
         std::shared_ptr<GameTurn> turn;
+        int playerIndex;
 };
 
 #endif // GAME_ACTION_H

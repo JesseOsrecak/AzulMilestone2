@@ -134,25 +134,32 @@ GameAction GameEngine::parseInput(const std::string input) {
         }
     } else {
         // try parsing as game command
+        
         action = createGameTurn(input);
 
-        // May still be a valid command
-        if (action.type() == UNKNOWN) {
-            if (input == "q" ||
-                input == "quit" ||
-                input == "exit" ||
-                input == "x") {
-                action = EXIT;
-            } else if (input == "h" ||
-                       input == "help" ||
-                       input == "?") {
-                action = SHOW_COMMANDS;
-            } else if (input == "m" ||
-                       input == "menu") {
-                action = SHOW_MENU;
-            } else if (input == "s" ||
-                       input == "save") {
-                action = SAVE;
+        
+        if (action.type() == UNKNOWN) 
+        {
+            action = createShowAction(input);
+            // May still be a valid command
+            if (action.type() == UNKNOWN) {
+                
+                if (input == "q" ||
+                    input == "quit" ||
+                    input == "exit" ||
+                    input == "x") {
+                    action = EXIT;
+                } else if (input == "h" ||
+                        input == "help" ||
+                        input == "?") {
+                    action = SHOW_COMMANDS;
+                } else if (input == "m" ||
+                        input == "menu") {
+                    action = SHOW_MENU;
+                } else if (input == "s" ||
+                        input == "save") {
+                    action = SAVE;
+                }
             }
         }
     }
@@ -164,7 +171,7 @@ GameAction GameEngine::createGameTurn(string input) {
     GameAction action = UNKNOWN;
 
     /* valid formats: "{1} {2} {3}"
-    *   {1} = {'c', 'C', 1, 2, 3, 4, 5}
+    *   {1} = {'c', 'C', 1, 2, 3, 4, 5, 6, 7, 8, 9}
     *   {2} = {'R', 'Y', 'B', 'L', 'U'}
     *   {3} = {'F', 1, 2, 3, 4, 5}
     */
@@ -203,7 +210,6 @@ GameAction GameEngine::createGameTurn(string input) {
                     source = gameModel->getTableCentre();
                 }
             }
-            
             // All validation tests pass, so create the game turn
             if (source && destination) {
                 action = GameAction(TURN, make_shared<GameTurn>(source, destination, colour));
@@ -213,6 +219,37 @@ GameAction GameEngine::createGameTurn(string input) {
 
     }
     
+    return action;
+}
+
+GameAction GameEngine::createShowAction(std::string input)
+{
+    GameAction action = UNKNOWN;
+
+    vector<shared_ptr<Player>> players = gameModel->getAllPlayers();
+
+        try {
+        
+        std::string keyword = input.substr(0,4);
+        int length = input.length();
+        std::string playerName = input.substr(5,length - 4);
+
+        if(keyword == "show" || keyword == "SHOW" || keyword == "Show")
+        {
+
+            for(int i = 0; i < gameModel->getNumberOfPlayers(); ++i)
+            {
+                if(playerName == players[i]->getName())
+                {
+                    action = GameAction(SHOW_PLAYER, i);
+                }
+            }
+ 
+        }
+    } catch (std::out_of_range& e) {
+
+    }
+
     return action;
 }
 
@@ -233,8 +270,17 @@ void GameEngine::performGameAction(GameAction action) {
     } else if (action.type() == CREDITS) {
         printCredits();
     } else if (action.type() == EXIT) {
-        // exit();
+        
+    } else if (action.type() == SHOW_PLAYER) {
+        printPlayerBoard(action.getPlayerIndex());
     }
+}
+
+void GameEngine::printPlayerBoard(int playerIndex)
+{
+    vector<shared_ptr<Player>> players = gameModel->getAllPlayers();
+
+    ioHandler->printToStdOut("Name: " + players[playerIndex]->getName() + "\n" + players[playerIndex]->getBoard()->toString() +"\n\n");
 }
 
 void GameEngine::fillFactories() {
