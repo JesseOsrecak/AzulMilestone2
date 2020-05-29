@@ -90,3 +90,12 @@ void IOHandler::printToFile(string output, string fileName) {
 bool IOHandler::eof() {
     return wasEof;
 }
+
+int IOHandler::readIntFromStdIn() 
+{
+    int input = 0;
+
+        std::cin >> input;
+
+    return input;
+}

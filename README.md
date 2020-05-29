@@ -242,32 +242,74 @@ The starting marker can only move to and from the centre and a player's floor li
 
 # Milestone 2
 
-## Tasks
-
 3.2.1
 Major enhancements
 3-4 Player Mode & 2 Centre Factories
+
 The Milestone 1 version of Azul is for 2 players only. The enhancement requires you to allow Azul to be played
-with either 2, 3, or 4 players. Ensure that you read the rules of Azul, as the number of factories changes
+with either 2, 3, or 4 players. 
+
+Ensure that you read the rules of Azul, as the number of factories changes
 depending on the number of players. This will also have significant impacts on your text-based UI for playing
 Azul. This is because it’s common for players to look at opponents mosaic(s) when considering their turn. In
 the 2-player game this is easy as the opponents board may still be on the screen. However, for more players, it
-14becomes too difficult to keep scrolling up in the terminal. Thus you should consider ways to improve the UI to
+becomes too difficult to keep scrolling up in the terminal. 
+
+Thus you should consider ways to improve the UI to
 make it easier to see an opponents mosaic.
+
 The enhancement also requires you to allow the user to specify whether 1 or 2 centre factories are used for the
 game. If 2 centre factories are used, the rules of Azul change as follows:
+
 • When playing a turn from a ’normal’ factory, the user must choose which of the 2 centre factories in which
-to place the excess tiles.
+to place the excess tile
+
 • A user may choose to select tiles (following standard rules) from either one of the 2 centre factories
+
 • The first player to draw from any centre factory receives the first player marker.
+
 For this enhancement, you may wish to consider:
+
 • This gives up to 6 different combinations of Azul games, with varying numbers of players and factories.
-• You may need to redesign and change the data structures that are used to represent Azul. However, you
-must still meet the mandatory minimal use of each data structure as given in Milestone 1.
+
+• You may need to redesign and change the data structures that are used to represent Azul. However,
+ you must still meet the mandatory minimal use of each data structure as given in Milestone 1.
+
 • You will need to modify the saved-game format to support the varying number of players and centre
 factories.
+
 • You may need additional commands to support your UI changes.
+
 In your individual report you should justify any significant changes to the choice of data structure(s), why the
 representation of information in the saved-game is suitable, describe any significant changes to your text-based
 UI, and justify any other necessary changes to your group’s Azul program.
 
+## Tasks
+
+3-4 player mode
+
+- option for looking at other players board
+
+- check save game works with multiple players
+
+- check load game works with multiple players
+
+2 Centre Factories
+
+- new game ask player how many factories
+
+- new game contruct specified number of factories
+
+- modify game model to support more then 1 centre factory
+
+- modify player turn to specify which factory to move the rest of the tiles to
+
+- modify turn source to specify which factory
+
+- modify end of round detection to check both factories
+
+- modify save game feature to support 2 factories
+
+- modify load game feature to support 2 factories
+
+- modify save game format to specifiy number of factories.

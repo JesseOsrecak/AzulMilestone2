@@ -31,7 +31,7 @@ class ModelBuilder {
 
         void loadBoxLid(std::string& tileList);
 
-        bool createNewGame(std::string player1Name, std::string player2Name, int seed);
+        bool createNewGame(std::string * playerNames, int numberOfPlayers, int seed);
 
     private:
         GameModel& gameModel;

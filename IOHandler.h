@@ -19,6 +19,8 @@ class IOHandler {
         // Receive a line of user input using stdin
         bool readFromStdIn(std::string& input);
 
+        int readIntFromStdIn();
+
         // Load game file into data map
         bool loadGameFile(std::map<std::string, std::string>& rawData,
                           const std::string& fileName);

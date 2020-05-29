@@ -473,18 +473,42 @@ void GameEngine::declareWinner() {
 
     vector<shared_ptr<Player>> players = gameModel->getAllPlayers();
 
-    if (players[0]->getScore() == players[1]->getScore()) {
-        if (players[0]->getRowsCompleted() == players[1]->getRowsCompleted()) {
-            // draw
-        } else if (players[0]->getRowsCompleted() > players[1]->getRowsCompleted()) {
-            winner = players[0];
-        } else {
-            winner = players[1];
+    //Find player with the highest score
+    int highestScore = 0;
+    vector<int> highestScoreIndex;
+    for (int i = 0; i < gameModel->getNumberOfPlayers(); ++i) {
+        if (players[i]->getScore() > highestScore) {
+            highestScoreIndex.clear();
+            highestScoreIndex.push_back(i);
+            highestScore = players[i]->getScore();
+        } else if (players[i]->getScore() == highestScore) {
+            highestScoreIndex.push_back(i);
         }
-    } else if (players[0]->getScore() > players[1]->getScore()) {
-        winner = players[0];
+    }
+
+    //If scores eqaul find player with the most collumns, Declare the winnner
+    if (highestScoreIndex.size() > 1) {
+        int mostRowsCompleted = 0;
+        vector<int> mostRowsCompletedIndex;
+        for (unsigned int i = 0; i < highestScoreIndex.size(); ++i)
+        {
+            if (players[highestScoreIndex[i]]->getRowsCompleted() > mostRowsCompleted){
+                mostRowsCompletedIndex.clear();
+                mostRowsCompletedIndex.push_back(i);
+                mostRowsCompleted = players[highestScoreIndex[i]]->getRowsCompleted();
+            } else if(players[highestScoreIndex[i]]->getRowsCompleted() == mostRowsCompleted) {
+                mostRowsCompletedIndex.push_back(i);
+            }
+        }
+
+        if(mostRowsCompletedIndex.size()) {
+            //draw
+        }
+        else {
+            winner = players[mostRowsCompletedIndex[0]];
+        }
     } else {
-        winner = players[1];
+        winner = players[highestScoreIndex[0]];
     }
 
     if (!winner) {
@@ -498,13 +522,23 @@ void GameEngine::declareWinner() {
 
 void GameEngine::passTurnToNextPlayer() {
     vector<shared_ptr<Player>>& players = gameModel->getAllPlayers();
-    
-    if (players[0] == gameModel->getCurrentPlayer()) {
-        gameModel->setCurrentPlayer(players[1]);
-    } else {
+    int currentPlayerNumber = 0;
+
+    for(int i = 0; i < gameModel->getNumberOfPlayers(); ++i)
+    {
+        if(players[i] == gameModel->getCurrentPlayer())
+        {
+            currentPlayerNumber = i;
+        }
+    }
+    if(gameModel->getNumberOfPlayers() - 1 == currentPlayerNumber)
+    {
         gameModel->setCurrentPlayer(players[0]);
     }
-
+    else
+    {
+        gameModel->setCurrentPlayer(players[++currentPlayerNumber]);
+    }
 }
 
 void GameEngine::loadGame() {
@@ -547,16 +581,33 @@ void GameEngine::saveGame() {
 
 void GameEngine::newGame() {
     gameModel = make_shared<GameModel>();
-    ioHandler->printToStdOut("Enter Player1 Name:\n");
-    std::string player1Name;
-    ioHandler->readFromStdIn(player1Name);
+
     
-    ioHandler->printToStdOut("Enter Player2 Name:\n");
-    std::string player2Name;
-    ioHandler->readFromStdIn(player2Name);
+    int numberOfPlayers = -1;
+
+
+    while(numberOfPlayers > 4 || numberOfPlayers < 2)
+    {
+        ioHandler->printToStdOut("Enter the number of players between 2 & 4:\n");
+        numberOfPlayers = ioHandler->readIntFromStdIn();
+        if(numberOfPlayers > 4 || numberOfPlayers < 2)
+        {
+            ioHandler->printToStdOut("Error: ");
+        }
+    }
+        std::string * playerNames = new std::string[numberOfPlayers];
+        std::string playerName = "";
+    
+    ioHandler->readFromStdIn(playerName);
+    for(int i = 0; i < numberOfPlayers; ++i)
+    {
+        ioHandler->printToStdOut("Enter Player Name:\n");
+        ioHandler->readFromStdIn(playerName);
+        playerNames[i] = playerName;
+    }
 
     ModelBuilder modelBuilder = ModelBuilder(*gameModel);
-    modelBuilder.createNewGame(player1Name, player2Name, seed);
+    modelBuilder.createNewGame(playerNames, numberOfPlayers, seed);
 
     if (gameModel->validate()) {
         ioHandler->printToStdOut("Game successfully created.\n");
@@ -580,8 +631,8 @@ int GameEngine::getTurnSource(char sourceKey) {
     int source = -1;
 
     if (sourceKey == 'c' || sourceKey == 'C') {
-        source = 5;
-    } else if (sourceKey == '1') {
+        source = 9;
+    } else if (sourceKey == '1') {std::string numberOfPlayers;
         source = 0;
     } else if (sourceKey == '2') {
         source = 1;
@@ -591,6 +642,14 @@ int GameEngine::getTurnSource(char sourceKey) {
         source = 3;
     } else if (sourceKey == '5') {
         source = 4;
+    } else if (sourceKey == '6' && gameModel->getNumberOfPlayers() >= 3) {
+        source = 5;
+    } else if (sourceKey == '7' && gameModel->getNumberOfPlayers() >= 3) {
+        source = 6;
+    } else if (sourceKey == '8' && gameModel->getNumberOfPlayers() >= 4) {
+        source = 7;
+    } else if (sourceKey == '9' && gameModel->getNumberOfPlayers() >= 4) {
+        source = 8;
     } else {
         // invalid source key
     }

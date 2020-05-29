@@ -191,16 +191,28 @@ TileColour ModelBuilder::getTileColourFromChar(char colourCode) {
 
 // If expanded to support more players should have an array of player names and
 // the amount of players in the constructor instead
-bool ModelBuilder::createNewGame(string player1Name, string player2Name, int seed) {
+bool ModelBuilder::createNewGame(std::string * playerNames, int numberOfPlayers, int seed) {
     // Instantiate players
-    gameModel.addPlayer(make_shared<Player>(player1Name));
-    gameModel.addPlayer(make_shared<Player>(player2Name));
+    for(int i = 0; i < numberOfPlayers; ++i)
+    {
+        gameModel.addPlayer(make_shared<Player>(playerNames[i]));
+    }
+    
 
     // Instantiate the first tile and add to the table center
     gameModel.getTableCentre()->add(std::make_unique<Tile>(FIRST));
     
+    int numberOfFactories = 5;
+    if(numberOfPlayers == 3)
+    {
+        numberOfFactories = 7;
+    }
+    else if(numberOfPlayers == 4)
+    {
+        numberOfFactories = 9;
+    }
     // Add factories to the model
-    for (int i = 0; i != 5; ++i) {
+    for (int i = 0; i != numberOfFactories; ++i) {
         gameModel.addFactory(make_shared<Factory>());
     }
 
