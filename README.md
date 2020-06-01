@@ -292,9 +292,7 @@ UI, and justify any other necessary changes to your group’s Azul program.
 
 3-4 player mode
 
-- check save game works with multiple players
-
-- check load game works with multiple players
+DONE
 
 2 Centre Factories
 
