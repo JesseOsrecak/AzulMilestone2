@@ -21,6 +21,7 @@
 #define CURRENT_PLAYER_KEY  std::string("CURRENT_PLAYER")
 #define FACTORY_KEY         std::string("FACTORY")
 #define CENTRE_KEY          std::string("CENTRE")
+#define TABLE_KEY           std::string("TABLE")
 
 #include <memory>
 #include <vector>
@@ -68,7 +69,17 @@ class GameModel {
 
         std::shared_ptr<BoxLid> getBoxLid();
 
-        std::shared_ptr<Factory> getTableCentre();
+        void addTableCentre();
+
+        int getNumberOfCentreFactories();
+
+        std::shared_ptr<Factory> getTableCentre(int i);
+
+        void placeFirstOnTable(std::unique_ptr<Tile> tile);
+
+        std::unique_ptr<Tile> removeFirstFromTable();
+
+        bool isFirst();
 
         // Used when saving a game
         std::string toString();
@@ -80,7 +91,9 @@ class GameModel {
         std::vector<std::shared_ptr<Player>> players;
         std::shared_ptr<Player> currentPlayer;
         std::vector<std::shared_ptr<Factory>> factories;
-        std::shared_ptr<Factory> tableCentre;     
+        std::vector<std::shared_ptr<Factory>> tableCentre;
+
+        std::unique_ptr<Tile> firstTile;     
 
 };
 

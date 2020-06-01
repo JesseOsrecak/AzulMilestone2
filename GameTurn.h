@@ -19,7 +19,7 @@ class GameTurn {
     public:
         GameTurn(std::shared_ptr<Factory> source,
                  std::shared_ptr<PatternLine> destination,
-                 TileColour colour);
+                 TileColour colour, std::shared_ptr<Factory> centre);
 
         // Get the source factory of the requested move
         std::shared_ptr<Factory> getSource();
@@ -31,10 +31,14 @@ class GameTurn {
         // to place into the destination
         TileColour getColour();
 
+        //Returns the facotry where excess tiles will be dumped
+        std::shared_ptr<Factory> getCentre();
+
     private:
         std::shared_ptr<Factory> source;
         std::shared_ptr<PatternLine> destination;
         TileColour colour;
+        std::shared_ptr<Factory> centre;
 };
 
 #endif // GAME_TURN_H

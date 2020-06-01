@@ -40,7 +40,7 @@ vector<unique_ptr<Tile>> Factory::getTiles() {
 
 void Factory::reportTileCounts(std::map<TileColour, int>& tileCounts) {
 
-    for (unsigned int i = 0; i != tiles.size(); ++i) {
+    for (unsigned int i = 0; i < tiles.size(); ++i) {
         int newCount = 1;
         auto count = tileCounts.find(tiles.at(i)->getColour());
         

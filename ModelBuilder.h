@@ -31,7 +31,7 @@ class ModelBuilder {
 
         void loadBoxLid(std::string& tileList);
 
-        bool createNewGame(std::string * playerNames, int numberOfPlayers, int seed);
+        bool createNewGame(int numberOfCentreFactories, std::string * playerNames, int numberOfPlayers, int seed);
 
     private:
         GameModel& gameModel;
@@ -63,6 +63,10 @@ class ModelBuilder {
         // Parse and load a row of the wall for a player
         void loadPlayerWallRow(std::shared_ptr<Player> player, int row, std::string tileList);
 
+        //
+        void loadFirstKey(std::string value);
+
+        int numberOfCentreFactories = 0;
 };
 
 #endif // MODEL_BUILDER_H

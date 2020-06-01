@@ -75,8 +75,22 @@ void GameEngine::printMenu() {
 
 void GameEngine::printPreTurnInfo() {
     // Print the centre table
-    ioHandler->printToStdOut("\nTable Centre\nC: " + gameModel->getTableCentre()->toString() + "\n\n");
+    ioHandler->printToStdOut("\nTable Centre\nC: " + gameModel->getTableCentre(0)->toString() + "\n");
 
+    if(gameModel->getNumberOfCentreFactories() == 2)
+    {
+        ioHandler->printToStdOut("D: " + gameModel->getTableCentre(1)->toString() + "\n");
+    }
+
+    if(gameModel->isFirst())
+    {
+        ioHandler->printToStdOut("F\n\n");
+    }
+    else
+    {
+        ioHandler->printToStdOut("\n");
+    }
+    
     // Print the factories
     ioHandler->printToStdOut("Factories\n");
     for (unsigned int i = 0; i != gameModel->getNumberOfFactories(); ++i) {
@@ -171,7 +185,7 @@ GameAction GameEngine::createGameTurn(string input) {
     GameAction action = UNKNOWN;
 
     /* valid formats: "{1} {2} {3}"
-    *   {1} = {'c', 'C', 1, 2, 3, 4, 5, 6, 7, 8, 9}
+    *   {1} = {'c', 'C', 'd', 'D', 1, 2, 3, 4, 5, 6, 7, 8, 9}
     *   {2} = {'R', 'Y', 'B', 'L', 'U'}
     *   {3} = {'F', 1, 2, 3, 4, 5}
     */
@@ -189,6 +203,7 @@ GameAction GameEngine::createGameTurn(string input) {
             shared_ptr<Factory> source = nullptr;
             shared_ptr<PatternLine> destination = nullptr;
 
+            bool sourceCentre = false;
             // Get pointer to the requested destination, but only if its a valid move
             if (destinationIndex < 5) {
                 // any pattern line from 0-4
@@ -206,13 +221,36 @@ GameAction GameEngine::createGameTurn(string input) {
                     source = gameModel->getFactory(sourceIndex);
                 }
             } else {
-                if (gameModel->getTableCentre()->contains(colour)) {
-                    source = gameModel->getTableCentre();
+                sourceIndex -= 9;
+                if ( sourceIndex < gameModel->getNumberOfCentreFactories() && gameModel->getTableCentre(sourceIndex)->contains(colour)) {
+                    sourceCentre = true;
+                    source = gameModel->getTableCentre(sourceIndex);
                 }
             }
             // All validation tests pass, so create the game turn
             if (source && destination) {
-                action = GameAction(TURN, make_shared<GameTurn>(source, destination, colour));
+
+                int dumpIndex = -1;
+                std::string dumpIn = "";
+
+                //if sourceCentre is true no tiles will be dumped hence it does not matter which source is passed
+                if(sourceCentre) {   
+                    dumpIndex = 0;
+                }
+
+                while(dumpIndex < 0 || dumpIndex > 2 ) {
+                    ioHandler->printToStdOut("Which factory will you like to dump to: \n");
+                    ioHandler->readFromStdIn(dumpIn);
+                    if(dumpIn == "C" || dumpIn == "c") {
+                        dumpIndex = 0;
+                    } else if (dumpIn == "D" || dumpIn == "d") {
+                        dumpIndex = 1;
+                    }
+                    if(dumpIndex < 0 || dumpIndex > 2) {
+                        ioHandler->printToStdOut("ERROR: ");
+                    }
+                }
+                action = GameAction(TURN, make_shared<GameTurn>(source, destination, colour, gameModel->getTableCentre(dumpIndex)));
             }
         }
     } catch (std::out_of_range& e) {
@@ -328,6 +366,19 @@ void GameEngine::refillTileBag() {
 void GameEngine::doTurn(shared_ptr<GameTurn> turn) {
     vector<unique_ptr<Tile>> sourceTiles = turn->getSource()->getTiles();
 
+    for(int i = 0; i < gameModel->getNumberOfCentreFactories(); ++i)
+    {
+        if(turn->getSource() == gameModel->getTableCentre(i))
+        {
+            if(gameModel->isFirst())
+            {
+                gameModel->getCurrentPlayer()->getBoard()->getFloorLine()->addTile(move(gameModel->removeFirstFromTable()));
+            }
+        }
+    }
+    
+
+
     for (unsigned int i = 0; i != sourceTiles.size(); ++i) {
         if (sourceTiles[i]->getColour() == turn->getColour()) {
             // colour matches what player wants
@@ -344,12 +395,12 @@ void GameEngine::doTurn(shared_ptr<GameTurn> turn) {
                     gameModel->getBoxLid()->add(move(sourceTiles[i]));
                 }
             }
-        } else if (sourceTiles[i]->isStartingMarker()) {
-            // the tile is the starting marker, which is placed on the floor line
-            gameModel->getCurrentPlayer()->getBoard()->getFloorLine()->addTile(move(sourceTiles[i]));
         } else {
             // excess tiles are moved to the table centre
-            gameModel->getTableCentre()->add(move(sourceTiles[i]));
+            
+            //TODO 
+            turn->getCentre()->add(move(sourceTiles[i]));
+            // gameModel->getTableCentre(0)->add(move(sourceTiles[i]));
         }
     }
 
@@ -371,7 +422,12 @@ bool GameEngine::endOfFactoryOffer() {
     bool isEnd = true;
     map<TileColour, int> counts;
 
-    isEnd = gameModel->getTableCentre()->isEmpty();
+    isEnd = !gameModel->isFirst();
+
+    for(int i = 0; i < gameModel->getNumberOfCentreFactories() &&  isEnd; ++i) {
+        isEnd  = gameModel->getTableCentre(i)->isEmpty();
+    }
+
     unsigned int index = 0;
 
     while (index != gameModel->getNumberOfFactories() && isEnd) {
@@ -445,7 +501,7 @@ int GameEngine::scorePlayerFloorLine(shared_ptr<Player> player) {
         // Move the tile to the correct place
         if (tile->isStartingMarker()) {
             // put the marker in the centre
-            gameModel->getTableCentre()->add(move(tile));
+            gameModel->placeFirstOnTable(move(tile));
 
             // setting current player here, so they start the next round
             gameModel->setCurrentPlayer(player);
@@ -593,13 +649,17 @@ void GameEngine::loadGame() {
     std::string fileName;
 
     if(ioHandler->readFromStdIn(fileName)) {
+        
         map<string, string> rawData;
         ioHandler->loadGameFile(rawData, fileName);
 
         ModelBuilder modelBuilder = ModelBuilder(*gameModel);
         modelBuilder.loadSaveData(rawData);
 
+        
+
         if (gameModel->validate()) {
+            
             ioHandler->printToStdOut("Game successfully loaded.\n");
             // Update game state
             inProgress = true;
@@ -630,7 +690,19 @@ void GameEngine::newGame() {
 
     
     int numberOfPlayers = -1;
+    int numberOfCentralFactories = -1;
 
+    while(numberOfCentralFactories > 2 || numberOfCentralFactories < 1)
+    {
+        ioHandler->printToStdOut("Enter the number of factories between 1 & 2:\n");
+        numberOfCentralFactories = ioHandler->readIntFromStdIn();
+        if(numberOfCentralFactories > 2 || numberOfCentralFactories < 1)
+        {
+            ioHandler->printToStdOut("Error: ");
+        }
+    }
+
+    
 
     while(numberOfPlayers > 4 || numberOfPlayers < 2)
     {
@@ -653,7 +725,7 @@ void GameEngine::newGame() {
     }
 
     ModelBuilder modelBuilder = ModelBuilder(*gameModel);
-    modelBuilder.createNewGame(playerNames, numberOfPlayers, seed);
+    modelBuilder.createNewGame(numberOfCentralFactories, playerNames, numberOfPlayers, seed);
 
     if (gameModel->validate()) {
         ioHandler->printToStdOut("Game successfully created.\n");
@@ -678,6 +750,8 @@ int GameEngine::getTurnSource(char sourceKey) {
 
     if (sourceKey == 'c' || sourceKey == 'C') {
         source = 9;
+    } else if(sourceKey == 'd' || sourceKey == 'D') {
+        source = 10;
     } else if (sourceKey == '1') {std::string numberOfPlayers;
         source = 0;
     } else if (sourceKey == '2') {

@@ -296,20 +296,4 @@ DONE
 
 2 Centre Factories
 
-- new game ask player how many factories
-
-- new game contruct specified number of factories
-
-- modify game model to support more then 1 centre factory
-
-- modify player turn to specify which factory to move the rest of the tiles to
-
-- modify turn source to specify which factory
-
-- modify end of round detection to check both factories
-
-- modify save game feature to support 2 factories
-
-- modify load game feature to support 2 factories
-
-- modify save game format to specifiy number of factories.
+DONE

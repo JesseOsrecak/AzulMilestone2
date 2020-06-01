@@ -25,7 +25,7 @@ GameModel::GameModel() :
     players(vector<shared_ptr<Player>>()),
     currentPlayer(nullptr),
     factories(vector<shared_ptr<Factory>>()),
-    tableCentre(make_shared<Factory>())
+    tableCentre(vector<shared_ptr<Factory>>())
 {}
 
 GameModel::~GameModel() {
@@ -55,8 +55,15 @@ bool GameModel::validate() {
         player->getBoard()->reportTileCounts(totals);
     }
 
-    tableCentre->reportTileCounts(totals);
+    for(unsigned int i = 0; i < tableCentre.size(); ++i) {
+        tableCentre[i]->reportTileCounts(totals);
+    }
     
+    if(isFirst())
+    {
+        ++totals[FIRST];
+    }
+
     if (totals[RED] == 20 &&
         totals[YELLOW] == 20 &&
         totals[DARK_BLUE] == 20 &&
@@ -110,8 +117,36 @@ shared_ptr<BoxLid> GameModel::getBoxLid() {
     return lid;
 }
 
-shared_ptr<Factory> GameModel::getTableCentre() {
-    return tableCentre;
+void GameModel::addTableCentre() {
+    tableCentre.push_back(make_shared<Factory>());
+}
+
+int GameModel::getNumberOfCentreFactories() {
+    return tableCentre.size();
+}
+
+shared_ptr<Factory> GameModel::getTableCentre(int i) {
+    return tableCentre[i];
+}
+
+std::unique_ptr<Tile> GameModel::removeFirstFromTable() {
+    return move(firstTile);
+}
+
+bool GameModel::isFirst() {
+    bool exists = true;
+
+    if(firstTile == nullptr)
+    {
+        exists = false;
+    }
+
+    return exists;
+}
+
+void GameModel::placeFirstOnTable(std::unique_ptr<Tile> tile)
+{
+    firstTile = std::move(tile);
 }
 
 std::string GameModel::toString() {
@@ -122,8 +157,17 @@ std::string GameModel::toString() {
     result += BAG_KEY + KEY_VALUE_DELIMITER + tileBag->toString() + "\n";
     result += LID_KEY + KEY_VALUE_DELIMITER + lid->toString() + "\n";
 
-    // Print taable centre
-    result += FACTORY_KEY + KEY_SPLIT_DELIMITER + CENTRE_KEY + KEY_VALUE_DELIMITER + tableCentre->toString() + "\n";
+    for(unsigned int i = 0; i < tableCentre.size(); ++i)
+    {
+        // Print table centre
+    result += FACTORY_KEY + KEY_SPLIT_DELIMITER + CENTRE_KEY + KEY_SPLIT_DELIMITER + to_string(i) + KEY_VALUE_DELIMITER + tableCentre[i]->toString() + "\n";
+    }
+    //print the table if FIRST tile has not been claimed
+    if(isFirst()) {
+        result += TABLE_KEY + KEY_VALUE_DELIMITER + "F\n";
+    } else {
+        result += TABLE_KEY + KEY_VALUE_DELIMITER + "\n";
+    }
 
     // Print factories
     for (unsigned int i = 0; i != factories.size(); ++i) {

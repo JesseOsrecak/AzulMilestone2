@@ -25,6 +25,7 @@ ModelBuilder::ModelBuilder(GameModel& gameModel) :
 {}
 
 void ModelBuilder::loadSaveData(map<string, string>& rawData) {
+
     for(const pair<string, string>& item : rawData) {
         parseAndLoadDataPair(item.first, item.second);
     }
@@ -51,6 +52,8 @@ void ModelBuilder::parseAndLoadDataPair(std::string key, std::string value) {
         currentPlayerId = value;
     } else if (key.find(FACTORY_KEY) == 0) {
         loadFactory(key, value);
+    } else if (key.find(TABLE_KEY) == 0) {
+        loadFirstKey(value);
     }
 }
 
@@ -74,15 +77,23 @@ void ModelBuilder::loadFactory(string key, string tileList) {
     // Drop the initial part of the key
     key.erase(0, FACTORY_KEY.length() + KEY_SPLIT_DELIMITER.length());
 
-    if (key == CENTRE_KEY) {
+    if (key.length() >= CENTRE_KEY.length()) {
+
+        gameModel.addTableCentre();
+
         for (char colourCode : tileList) {
+
             TileColour tileColour = getTileColourFromChar(colourCode);
-            gameModel.getTableCentre()->add(make_unique<Tile>(tileColour));
+            gameModel.getTableCentre(numberOfCentreFactories)->add(make_unique<Tile>(tileColour));
+
         }
+
+        ++numberOfCentreFactories;
     } else {
         // do standard factory
         tempFactories[stoi(key)] = make_shared<Factory>();
         for (char colourCode : tileList) {
+
             TileColour tileColour = getTileColourFromChar(colourCode);
             tempFactories[stoi(key)]->add(make_unique<Tile>(tileColour));
         }
@@ -164,6 +175,16 @@ void ModelBuilder::loadPlayerWallRow(std::shared_ptr<Player> player, int row, st
     }
 }
 
+void ModelBuilder::loadFirstKey(std::string tileList)
+{
+    for (char colourCode : tileList) {
+        TileColour tileColour = getTileColourFromChar(colourCode);
+        if (tileColour == FIRST) { 
+            gameModel.placeFirstOnTable(make_unique<Tile>(tileColour)); 
+        }
+    }
+}
+
 // This method should probably be somewhere else
 TileColour ModelBuilder::getTileColourFromChar(char colourCode) {
     TileColour result = RED;
@@ -191,17 +212,20 @@ TileColour ModelBuilder::getTileColourFromChar(char colourCode) {
 
 // If expanded to support more players should have an array of player names and
 // the amount of players in the constructor instead
-bool ModelBuilder::createNewGame(std::string * playerNames, int numberOfPlayers, int seed) {
+bool ModelBuilder::createNewGame(int numberOfCentreFactories, std::string * playerNames, int numberOfPlayers, int seed) {
     // Instantiate players
     for(int i = 0; i < numberOfPlayers; ++i)
     {
         gameModel.addPlayer(make_shared<Player>(playerNames[i]));
     }
     
-
-    // Instantiate the first tile and add to the table center
-    gameModel.getTableCentre()->add(std::make_unique<Tile>(FIRST));
+    for(int i = 0 ; i < numberOfCentreFactories ; ++i)
+    {
+        gameModel.addTableCentre();
+    }
     
+    gameModel.placeFirstOnTable(std::make_unique<Tile>(FIRST));
+        
     int numberOfFactories = 5;
     if(numberOfPlayers == 3)
     {
