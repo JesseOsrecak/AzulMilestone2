@@ -65,3 +65,13 @@ string Factory::toString() {
 
     return result;
 }
+
+string Factory::getPrintable() {
+    std::string result = "";
+
+    for (unsigned int i = 0; i != tiles.size(); ++i) {
+        result += tiles.at(i)->colouredToString();
+    }
+
+    return result;
+}

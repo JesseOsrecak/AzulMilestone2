@@ -34,6 +34,7 @@ class Factory {
         // Get a printable version of the tiles in the factory.
         std::string toString();
         
+        std::string getPrintable();
     protected:
         std::vector<std::unique_ptr<Tile>> tiles;
 };

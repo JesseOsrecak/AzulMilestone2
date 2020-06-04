@@ -18,6 +18,8 @@ class FloorLine : public PatternLine {
 
         // Get a printable string of the tile colours
         std::string toString();
+
+        std::string getPrintable();
 };
 
 #endif // FLOOR_LINE_H

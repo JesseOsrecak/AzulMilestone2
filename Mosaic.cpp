@@ -280,3 +280,33 @@ string Mosaic::toString(int row, bool useWallTemplate) {
 
     return result;
 }
+
+string Mosaic::getPrintable(int row)
+{
+    string result = "";
+
+
+
+    for(int col = 0; col < 5; ++col)
+    {
+        if(wall[row][col] != nullptr)
+        {
+            result += wall[row][col]->colouredToString();
+        }
+        else
+        {
+            result += Tile::colouredToString(NONE);
+        }
+        
+        
+    }
+
+    result += " <-> ";
+
+    for(int col = 0; col < 5; ++col)
+    {
+        result += Tile::colouredToString(wallTemplate[row][col]);
+    }
+
+    return result;
+}

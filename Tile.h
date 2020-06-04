@@ -27,8 +27,14 @@ class Tile {
         // Return the tile colour as a string (for save/print)
         std::string toString();
 
+        //Return tile Colour in coloured Text for Printing;
+        std::string colouredToString();
+
         // Get the string for a specific colour.
         static std::string toString(TileColour colour);
+
+        // Get the string for a specific colour.
+        static std::string colouredToString(TileColour colour);
 
     private:
         TileColour colour;

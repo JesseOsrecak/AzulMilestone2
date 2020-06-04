@@ -61,3 +61,11 @@ std::string Player::toString() {
 
     return data;
 }
+
+std::string Player::getPrintable() {
+    std::string data = "Name: " + name + ", ";
+    data += "Score: " + to_string(score) + "\n";
+    data += board->getPrintable();
+
+    return data;
+}

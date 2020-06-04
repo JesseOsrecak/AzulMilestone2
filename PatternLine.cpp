@@ -29,6 +29,11 @@ int PatternLine::getSpace() {
     return size - tiles.size();
 }
 
+int PatternLine::getNumberOfTiles()
+{
+    return tiles.size();
+}
+
 bool PatternLine::isfull() {
     return getSpace() == 0 ? true : false;
 }
@@ -95,6 +100,24 @@ std::string PatternLine::toString() {
             result += Tile::toString(NONE);
         } else {
             result += Tile::toString(colour);
+        }
+    }
+
+    return result;
+}
+
+std::string PatternLine::getPrintable()
+{
+    string result = "";
+    unsigned int space = getSpace();
+    TileColour colour = getColour();
+
+    for (unsigned int i = 0; i != size; ++i) {
+        if (i < space) {
+            result += Tile::colouredToString(NONE);
+        } else {
+            result += Tile::colouredToString(colour);
+            
         }
     }
 

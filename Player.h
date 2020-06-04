@@ -49,6 +49,8 @@ class Player {
         // Returns a string represenation of the player
         std::string toString();
 
+        std::string getPrintable();
+
     private:
         std::string name;
         int score;

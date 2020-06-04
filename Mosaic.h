@@ -63,6 +63,8 @@ class Mosaic
         // Get a printable string for the given row of the mosaic template
         std::string toString(int row, bool useWallTemplate);
 
+        std::string getPrintable(int row);
+
     private:
         void initialiseWall();
 

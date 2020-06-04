@@ -24,3 +24,18 @@ string FloorLine::toString() {
 
     return result;
 }
+
+string FloorLine::getPrintable()
+{
+    string result = "";
+
+    for (unsigned int i = 0; i != LINE_SIZE; ++i) {
+        if (i < tiles.size()) {
+            result += tiles[i]->colouredToString();
+        } else {
+            result += Tile::colouredToString(NONE);
+        }
+    }
+
+    return result;
+}

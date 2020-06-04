@@ -75,11 +75,11 @@ void GameEngine::printMenu() {
 
 void GameEngine::printPreTurnInfo() {
     // Print the centre table
-    ioHandler->printToStdOut("\nTable Centre\nC: " + gameModel->getTableCentre(0)->toString() + "\n");
+    ioHandler->printToStdOut("\nTable Centre\nC: " + gameModel->getTableCentre(0)->getPrintable() + "\n");
 
     if(gameModel->getNumberOfCentreFactories() == 2)
     {
-        ioHandler->printToStdOut("D: " + gameModel->getTableCentre(1)->toString() + "\n");
+        ioHandler->printToStdOut("D: " + gameModel->getTableCentre(1)->getPrintable() + "\n");
     }
 
     if(gameModel->isFirst())
@@ -94,12 +94,12 @@ void GameEngine::printPreTurnInfo() {
     // Print the factories
     ioHandler->printToStdOut("Factories\n");
     for (unsigned int i = 0; i != gameModel->getNumberOfFactories(); ++i) {
-        ioHandler->printToStdOut(to_string(i + 1) + ": " + gameModel->getFactory(i)->toString() + "\n");
+        ioHandler->printToStdOut(to_string(i + 1) + ": " + gameModel->getFactory(i)->getPrintable() + "\n");
     }
 
     // Print the current player
     ioHandler->printToStdOut("\nCurrent Player\n");
-    ioHandler->printToStdOut(gameModel->getCurrentPlayer()->toString() + "\n\n");
+    ioHandler->printToStdOut(gameModel->getCurrentPlayer()->getPrintable() + "\n\n");
     
 }
 
@@ -311,6 +311,8 @@ void GameEngine::performGameAction(GameAction action) {
         
     } else if (action.type() == SHOW_PLAYER) {
         printPlayerBoard(action.getPlayerIndex());
+    } else if (action.type() == SHOW_COMMANDS) {
+        printCommands();
     }
 }
 
@@ -318,7 +320,20 @@ void GameEngine::printPlayerBoard(int playerIndex)
 {
     vector<shared_ptr<Player>> players = gameModel->getAllPlayers();
 
-    ioHandler->printToStdOut("Name: " + players[playerIndex]->getName() + "\n" + players[playerIndex]->getBoard()->toString() +"\n\n");
+    ioHandler->printToStdOut("Name: " + players[playerIndex]->getName() + "\n" + players[playerIndex]->getBoard()->getPrintable() +"\n\n");
+}
+
+void GameEngine::printCommands()
+{
+    std::string commands = "Commands:\n";
+    commands += "Show a player's board -> show <playerName>\n";
+    commands += "To make a turn -> <source> <Tile> <destination>\n";
+    commands += "To get the commands list -> help\n";
+    commands += "To get the menu -> menu\n";
+    commands += "To save the game -> save\n";
+    commands += "To exit the game -> exit\n";
+
+    ioHandler->printToStdOut(commands);
 }
 
 void GameEngine::fillFactories() {

@@ -94,3 +94,29 @@ string PlayerBoard::toString() {
 
     return result;
 }
+
+string PlayerBoard::getPrintable()
+{
+    string result = "";
+
+    for (int i = 0; i != 5; ++i) {
+        result += to_string(i + 1) + ": ";
+
+        // Add pattern lines, with padding
+        string line = lines[i]->getPrintable();
+        result += line.insert(0, 5 - lines[i]->getSize(), ' ');
+        result += " || ";
+
+        // Add player's wall + template
+        result += wall.getPrintable(i);
+
+
+
+        result += "\n";
+    }
+
+    result += "Floor: ";
+    result += floorLine->getPrintable();
+
+    return result;
+}

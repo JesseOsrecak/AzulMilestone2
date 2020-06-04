@@ -45,6 +45,9 @@ class PlayerBoard {
         // Return a printable version of the player board
         std::string toString();
 
+        //Returns a coloured printable version of the playerboard
+        std::string getPrintable();
+
     private:
         std::shared_ptr<FloorLine> floorLine;
         Mosaic wall;

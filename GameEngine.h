@@ -100,6 +100,8 @@ class GameEngine {
 
         void printPlayerBoard(int playerIndex);
 
+        void printCommands();
+
     private:
         std::shared_ptr<GameModel>    gameModel;
         std::shared_ptr<IOHandler>    ioHandler;

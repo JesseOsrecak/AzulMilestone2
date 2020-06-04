@@ -50,6 +50,10 @@ class PatternLine {
 
         // Get a printable string of the tile colours
         std::string toString();
+        //Returns a printable version containing coloured text
+        std::string getPrintable();
+        //returns the number of tiles within the patternline
+        int getNumberOfTiles();
 
     protected:
         unsigned int size;
