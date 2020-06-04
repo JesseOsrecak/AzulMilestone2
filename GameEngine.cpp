@@ -84,7 +84,7 @@ void GameEngine::printPreTurnInfo() {
 
     if(gameModel->isFirst())
     {
-        ioHandler->printToStdOut("F\n\n");
+        ioHandler->printToStdOut( Tile::colouredToString(FIRST) + "\n\n");
     }
     else
     {
@@ -238,6 +238,12 @@ GameAction GameEngine::createGameTurn(string input) {
                     dumpIndex = 0;
                 }
 
+                //if there is only 1 centre factory set the index No need to ask which factory to place into
+                if(gameModel->getNumberOfCentreFactories() == 1)
+                {
+                    dumpIndex = 0;
+                }
+                
                 while(dumpIndex < 0 || dumpIndex > 2 ) {
                     ioHandler->printToStdOut("Which factory will you like to dump to: \n");
                     ioHandler->readFromStdIn(dumpIn);
